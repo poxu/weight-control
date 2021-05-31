@@ -43,18 +43,4 @@ public class SetWeight implements MessageHandler {
         }
         return false;
     }
-
-    public int getLowConfines(List<WeightDto> dtos) {
-        int lowConfines = 0;
-        for (int i = 0; i < dtos.size(); i++) {
-            WeightDto weightDto = dtos.get(i);
-            if (weightDto.getWeight() < lowConfines) {
-                lowConfines = weightDto.getWeight().intValue();
-            }
-        }
-        if (lowConfines <= 10) {
-            return 0;
-        }
-        return lowConfines - 10;
-    }
 }

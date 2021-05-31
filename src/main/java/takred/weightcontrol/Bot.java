@@ -28,6 +28,7 @@ public class Bot extends TelegramLongPollingBot {
     public final AddWeight addWeight;
     public final RedactWeight redactWeight;
     private final String botToken;
+    private final String botUserName;
     private final List<MessageHandler> messageHandlers = new ArrayList<>();
 
     public Bot(WeightService weightService,
@@ -37,8 +38,8 @@ public class Bot extends TelegramLongPollingBot {
                GetChartByCommand getChartByCommand,
                GetWeightList getWeightList,
                RedactWeight redactWeight,
-               @Value("${bot-token}") String botToken
-    ) {
+               @Value("${bot-token}") String botToken,
+               @Value("&{bot-user-name}") String botUserName) {
         this.weightService = weightService;
         this.addWeight = addWeight;
         this.messageHandlers.add(setWeight);
@@ -48,6 +49,7 @@ public class Bot extends TelegramLongPollingBot {
         this.messageHandlers.add(getWeightList);
         this.redactWeight = redactWeight;
         this.botToken = botToken;
+        this.botUserName = botUserName;
     }
 
     @PostConstruct
@@ -128,12 +130,11 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "weight_controlBot";
+        return botUserName;
     }
 
     @Override
     public String getBotToken() {
-        System.out.println(botToken);
         return botToken;
     }
 }

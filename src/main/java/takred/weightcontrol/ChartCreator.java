@@ -6,6 +6,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import takred.weightcontrol.dto.WeightDto;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class ChartCreator
 {
-    public JFreeChart createChart(CategoryDataset dataset) {
+    public JFreeChart createChart(CategoryDataset dataset, int lowConfines, int highConfines ) {
         JFreeChart chart = ChartFactory.createLineChart(
                 "Линейный график веса.",
                 null,
@@ -35,6 +36,8 @@ public class ChartCreator
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         rangeAxis.setAutoRangeIncludesZero(true);
+        rangeAxis.setAutoRange(false);
+        rangeAxis.setRange(new Range(lowConfines, highConfines));
 
         LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
 
