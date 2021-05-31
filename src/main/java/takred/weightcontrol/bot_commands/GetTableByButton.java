@@ -43,15 +43,27 @@ public class GetTableByButton implements MessageHandler {
         table.add("``` |---------------------|-------|```");
         for (int i = 0; i < dtos.size(); i++) {
             WeightDto dto = dtos.get(i);
+            int hour = dto.getDate().getHour();
+            int minute = dto.getDate().getMinute();
+            int second = dto.getDate().getSecond();
             String line;
-            line = "``` | " + dto.getDate().toLocalDate()
-                    + " "
-                    + dto.getDate().getHour()
-                    + ":"
-                    + dto.getDate().getMinute()
-                    + ":"
-                    + dto.getDate().getSecond()
-                    + " | " + dto.getWeight();
+            line = "``` | " + dto.getDate().toLocalDate() + " ";
+            if (hour < 10){
+                line = line + "0" + hour + ":";
+            } else {
+                line = line + hour + ":";
+            }
+            if (minute < 10){
+                line = line + "0" + minute + ":";
+            } else {
+                line = line + minute + ":";
+            }
+            if (second < 10){
+                line = line + "0" + second;
+            } else {
+                line = line + second;
+            }
+            line = line + " | " + dto.getWeight();
             int iteration = 6 - dto.getWeight().toString().length();
             for (int j = 0; j < iteration; j++) {
                 line = line + " ";
