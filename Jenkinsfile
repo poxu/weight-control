@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Start docker') {
             steps {
-                sh "BOT_TOKEN=$BOT_TOKEN docker-compose --project-name=weight-control-app up -d --build"
+                sh 'BOT_TOKEN=$BOT_TOKEN docker-compose --project-name=weight-control-app up -d --build'
             }
         }
     }
