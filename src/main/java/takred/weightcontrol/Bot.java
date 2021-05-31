@@ -37,6 +37,7 @@ public class Bot extends TelegramLongPollingBot {
                GetChartByButton getChartByButton,
                GetChartByCommand getChartByCommand,
                GetWeightList getWeightList,
+               GetTableByButton getTableByButton,
                RedactWeight redactWeight,
                @Value("${bot-token}") String botToken,
                @Value("&{bot-user-name}") String botUserName) {
@@ -47,6 +48,7 @@ public class Bot extends TelegramLongPollingBot {
         this.messageHandlers.add(getChartByButton);
         this.messageHandlers.add(getChartByCommand);
         this.messageHandlers.add(getWeightList);
+        this.messageHandlers.add(getTableByButton);
         this.redactWeight = redactWeight;
         this.botToken = botToken;
         this.botUserName = botUserName;
@@ -69,6 +71,23 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(result);
+        try {
+            sendApiMethod(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessage(CallbackQuery callbackQuery, List<String> table) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(callbackQuery.getMessage().getChatId().toString());
+        sendMessage.setReplyToMessageId(callbackQuery.getMessage().getMessageId());
+        String line = "";
+        for (int i = 0; i < table.size(); i++) {
+            line = line + table.get(i) + "\n";
+        }
+        sendMessage.setText(line);
         try {
             sendApiMethod(sendMessage);
         } catch (TelegramApiException e) {
@@ -103,10 +122,14 @@ public class Bot extends TelegramLongPollingBot {
     public void sendInlineKeyboardButton(Message message) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
         inlineKeyboardButton1.setText("График веса.");
         inlineKeyboardButton1.setCallbackData("/gwc");
+        inlineKeyboardButton2.setText("Таблица веса.");
+        inlineKeyboardButton2.setCallbackData("/gwt");
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         keyboardButtonsRow1.add(inlineKeyboardButton1);
+        keyboardButtonsRow1.add(inlineKeyboardButton2);
         List<List<InlineKeyboardButton>> list = new ArrayList<>();
         list.add(keyboardButtonsRow1);
         inlineKeyboardMarkup.setKeyboard(list);
