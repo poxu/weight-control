@@ -5,18 +5,25 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import takred.weightcontrol.Bot;
 import takred.weightcontrol.MessageHandler;
 import takred.weightcontrol.dto.WeightDto;
+import takred.weightcontrol.service.WeightService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class GetTableByButton implements MessageHandler {
+    private final WeightService weightService;
+
+    public GetTableByButton(WeightService weightService) {
+        this.weightService = weightService;
+    }
+
     @Override
     public boolean process(Bot bot, Update update){
-        if (update.getMessage() == null) {
+        if (!update.hasMessage()) {
             if (update.hasCallbackQuery()) {
                 if (update.getCallbackQuery().getData().equals("/gwt")) {
-                    List<WeightDto> lastTenWeights = getLastTenWeights(bot.weightService.getMyWeight(update.getCallbackQuery().getFrom().getId().toString()));
+                    List<WeightDto> lastTenWeights = getLastTenWeights(weightService.getMyWeight(update.getCallbackQuery().getFrom().getId().toString()));
                     List<String> table = getTable(lastTenWeights);
                     bot.sendMessage(update.getCallbackQuery(), table);
                 }
@@ -38,14 +45,13 @@ public class GetTableByButton implements MessageHandler {
 
     public List<String> getTable(List<WeightDto> dtos) {
         List<String> table = new ArrayList<>();
-        table.add("``` |---------------------|-------|```");
-        table.add("``` | Дата                | Вес   |```");
-        table.add("``` |---------------------|-------|```");
+        table.add("``` |------------------|-------|```");
+        table.add("``` | Дата             | Вес   |```");
+        table.add("``` |------------------|-------|```");
         for (int i = 0; i < dtos.size(); i++) {
             WeightDto dto = dtos.get(i);
             int hour = dto.getDate().getHour();
             int minute = dto.getDate().getMinute();
-            int second = dto.getDate().getSecond();
             String line;
             line = "``` | " + dto.getDate().toLocalDate() + " ";
             if (hour < 10){
@@ -54,14 +60,9 @@ public class GetTableByButton implements MessageHandler {
                 line = line + hour + ":";
             }
             if (minute < 10){
-                line = line + "0" + minute + ":";
+                line = line + "0" + minute;
             } else {
-                line = line + minute + ":";
-            }
-            if (second < 10){
-                line = line + "0" + second;
-            } else {
-                line = line + second;
+                line = line + minute;
             }
             line = line + " | " + dto.getWeight();
             int iteration = 6 - dto.getWeight().toString().length();
@@ -70,7 +71,7 @@ public class GetTableByButton implements MessageHandler {
             }
             line = line + "|```";
             table.add(line);
-            table.add("``` |---------------------|-------|```");
+            table.add("``` |------------------|-------|```");
         }
         return table;
     }

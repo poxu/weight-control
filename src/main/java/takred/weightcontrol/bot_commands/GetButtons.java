@@ -12,7 +12,9 @@ public class GetButtons implements MessageHandler {
         if (!update.hasCallbackQuery()) {
             if (update.hasMessage()) {
                 if (update.getMessage().getText().equals("b")
-                || update.getMessage().getText().equals("B")) {
+                        || update.getMessage().getText().equals("B")
+                        || update.getMessage().getText().equals("и")
+                        || update.getMessage().getText().equals("И")) {
                     bot.sendInlineKeyboardButton(update.getMessage());
                     return true;
                 }

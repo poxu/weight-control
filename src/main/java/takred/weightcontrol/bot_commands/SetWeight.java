@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import takred.weightcontrol.Bot;
 import takred.weightcontrol.MessageHandler;
 import takred.weightcontrol.dto.WeightDto;
+import takred.weightcontrol.service.WeightService;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,6 +13,16 @@ import java.util.List;
 
 @Service
 public class SetWeight implements MessageHandler {
+    private final WeightService weightService;
+    private final AddWeight addWeight;
+    private final RedactWeight redactWeight;
+
+    public SetWeight(WeightService weightService, AddWeight addWeight, RedactWeight redactWeight) {
+        this.weightService = weightService;
+        this.addWeight = addWeight;
+        this.redactWeight = redactWeight;
+    }
+
     public boolean process(Bot bot, Update update) {
 
         if (!update.hasCallbackQuery()) {
@@ -25,8 +36,8 @@ public class SetWeight implements MessageHandler {
                 LocalDateTime dateTime = LocalDateTime.now();
                 LocalTime midday = LocalTime.of(12, 00);
 
-                List<WeightDto> weights = bot.weightService.getMyWeight(update.getMessage().getFrom().getId().toString());
-                if (bot.addWeight.addWeight(bot, update.getMessage(), weights)) {
+                List<WeightDto> weights = weightService.getMyWeight(update.getMessage().getFrom().getId().toString());
+                if (addWeight.addWeight(bot, update.getMessage(), weights)) {
                     return true;
                 }
                 WeightDto obj = weights.get(weights.size() - 1);
@@ -34,10 +45,10 @@ public class SetWeight implements MessageHandler {
                 boolean inRecording = obj.getDate().toLocalTime().getHour() >= midday.getHour();
                 boolean condition = dateTime.toLocalDate().equals(obj.getDate().toLocalDate())
                         && now == inRecording;
-                if (bot.addWeight.addWeight(bot, update.getMessage(), condition)) {
+                if (addWeight.addWeight(bot, update.getMessage(), condition)) {
                     return true;
                 }
-                bot.redactWeight.redactWeight(bot, update.getMessage(), obj);
+                redactWeight.redactWeight(bot, update.getMessage(), obj);
                 return true;
             }
         }

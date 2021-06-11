@@ -8,6 +8,7 @@ import takred.weightcontrol.Bot;
 import takred.weightcontrol.ChartCreator;
 import takred.weightcontrol.MessageHandler;
 import takred.weightcontrol.dto.WeightDto;
+import takred.weightcontrol.service.WeightService;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -17,13 +18,18 @@ import java.util.List;
 
 @Service
 public class GetChartByCommand implements MessageHandler {
+    private final WeightService weightService;
+
+    public GetChartByCommand(WeightService weightService) {
+        this.weightService = weightService;
+    }
 
     public boolean process(Bot bot, Update update) throws IOException {
         if (!update.hasCallbackQuery()) {
             if (update.hasMessage()) {
                 if (update.getMessage().getText().equals("/gwc")) {
                     ChartCreator chartCreator = new ChartCreator();
-                    List<WeightDto> dtos = bot.weightService.getMyWeight(update.getCallbackQuery().getFrom().getId().toString());
+                    List<WeightDto> dtos = weightService.getMyWeight(update.getCallbackQuery().getFrom().getId().toString());
                     CategoryDataset categoryDataset = chartCreator.createDataset(dtos);
                     JFreeChart chart = chartCreator.createChart(categoryDataset, getLowConfines(dtos), getHighConfines(dtos));
                     BufferedImage bufferedImage = chart.createBufferedImage(1000, 1000);

@@ -2,6 +2,7 @@ package takred.weightcontrol.service;
 
 import org.springframework.stereotype.Service;
 import takred.weightcontrol.Converter;
+import takred.weightcontrol.dto.YearAndDayDto;
 import takred.weightcontrol.dto.UserNameAndWeightDto;
 import takred.weightcontrol.dto.WeightDto;
 import takred.weightcontrol.entity.Weight;
@@ -42,6 +43,17 @@ public class WeightService {
             weightDtos.add(weightMapper.map(weights.get(i)));
         }
         return weightDtos;
+    }
+
+    public YearAndDayDto getLastRecordingDayById(Integer telegramUserId) {
+        List<WeightDto> dtos = getMyWeight(telegramUserId.toString());
+        if (dtos.isEmpty()) {
+            return null;
+        }
+        WeightDto weightDto = dtos.get(dtos.size() - 1);
+        Integer year = weightDto.getDate().getYear();
+        Integer day = weightDto.getDate().getDayOfYear();
+        return new YearAndDayDto(year, day);
     }
 
     public List<String> getMyWeightCsv(String userName) {

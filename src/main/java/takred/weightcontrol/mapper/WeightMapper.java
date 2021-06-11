@@ -8,7 +8,8 @@ import takred.weightcontrol.entity.Weight;
 @Component
 public class WeightMapper {
     public WeightDto map(Weight entity) {
-        return new WeightDtoBuilder().withUserName(entity.getUserName())
+        return new WeightDtoBuilder()
+                .withUserName(entity.getUserName())
                 .withWeight(entity.getWeight())
                 .withDate(entity.getMeasurementDate())
                 .withId(entity.getId())
